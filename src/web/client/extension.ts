@@ -8,12 +8,10 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
-import { ORG_URL, PORTALSURISCHEME } from "./common/constants";
+import { PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
-import { checkMap, checkString, showErrorDialog } from "./common/errorHandler";
+import { checkParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 let _telemetry: TelemetryReporter;
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export function activate(context: vscode.ExtensionContext): void {
     // setup telemetry
@@ -22,7 +20,7 @@ export function activate(context: vscode.ExtensionContext): void {
     _telemetry.sendTelemetryEvent("Start");
     _telemetry.sendTelemetryEvent("activated");
     const portalsFS = new PortalsFS();
-    context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALSURISCHEME, portalsFS, { isCaseSensitive: true }));
+    context.subscriptions.push(vscode.workspace.registerFileSystemProvider(PORTALS_URI_SCHEME, portalsFS, { isCaseSensitive: true }));
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -50,29 +48,33 @@ export function activate(context: vscode.ExtensionContext): void {
                 catch (error) {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
-                let accessToken;
-                let dataverseOrgUrl;
+                let accessToken: string;
+                let dataverseOrgUrl: string;
                 if (appName) {
                     switch (appName) {
                         case 'portal':
-                        case 'default':
-                            dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
-                            checkString(dataverseOrgUrl);
-                            checkMap(queryParamsMap);
-                            checkString(entity);
-                            accessToken = await dataverseAuthentication(dataverseOrgUrl);
-                            if (!accessToken) {
-                                {
-                                    showErrorDialog("Error intializing the platform", "Authentication to dataverse failed!, Please retry...");
+                            try {
+                                dataverseOrgUrl = checkParameters(queryParamsMap, entity);
+                                accessToken = await dataverseAuthentication(dataverseOrgUrl);
+                                if (!accessToken) {
+                                    {
+                                        showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);
+                                        return;
+                                    }
                                 }
+                                setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
+                            } catch {
+                                showErrorDialog(ERRORS.SERVICE_ERROR, ERRORS.BAD_VALUE);
+                                return;
                             }
-                            setContext(accessToken, entity, entityId, queryParamsMap, portalsFS);
                             break;
+                        case 'default':
                         default:
-                            vscode.window.showInformationMessage('Unknown app, Please add authentication flow for this app');
+                            vscode.window.showInformationMessage(ERRORS.UNKNOWN_APP);
                     }
                 } else {
-                    vscode.window.showErrorMessage("Please specify the appName");
+                    vscode.window.showErrorMessage(ERRORS.APP_NAME_NOT_AVAILABLE);
+                    throw new Error(ERRORS.APP_NAME_NOT_AVAILABLE);
                 }
             }
         )
@@ -82,8 +84,6 @@ export function activate(context: vscode.ExtensionContext): void {
 export async function deactivate(): Promise<void> {
     if (_telemetry) {
         _telemetry.sendTelemetryEvent("End");
-        // dispose() will flush any events not sent
-        // Note, while dispose() returns a promise, we don't await it so that we can unblock the rest of unloading logic
         _telemetry.dispose();
     }
 }

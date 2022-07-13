@@ -9,12 +9,8 @@ export const portal_schema_data = {
             api: "api",
             data: "data",
             version: "v9.1",
-            singleEntityURL: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}({entityId})",
-            multiEntityURL: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}",
-            requestUrlForportalLanguage: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_portallanguageid,adx_languagecode",
-            requestUrlForWebsiteId: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_name,adx_webpageid",
-            requestUrlForWebtemplates: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=$select=adx_name,adx_webtemplateid",
-            requestUrlForWebsitelanguage: "https://{dataverseOrg}/{api}/{data}/{version}/{entity}?$select=adx_websitelanguageid,_adx_portallanguageid_value"
+            singleEntityURL: "https://{dataverseOrgUrl}/{api}/{data}/{version}/{entity}({entityId})",
+            multiEntityURL: "https://{dataverseOrgUrl}/{api}/{data}/{version}/{entity}"
         },
         "entity": [
             {
@@ -117,7 +113,8 @@ export const portal_schema_data = {
                 "_disableplugins": "true",
                 "_foldername": "",
                 "_propextension": "website",
-                "_exporttype": "SingleFolder"
+                "_exporttype": "SingleFolder",
+                "_query": "?$select=adx_name,adx_webpageid,adx_websitelanguageid,_adx_portallanguageid_value"
             },
             {
                 "fields": {
@@ -255,7 +252,8 @@ export const portal_schema_data = {
                 "_downloadThroughChild": "true",
                 "_foldername": ".portalconfig",
                 "_propextension": "portallanguage",
-                "_exporttype": "SingleFile"
+                "_exporttype": "SingleFile",
+                "_query": "?$select=adx_portallanguageid,adx_languagecode"
             },
             {
                 "fields": {
