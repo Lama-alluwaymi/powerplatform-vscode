@@ -8,7 +8,7 @@ import TelemetryReporter from "@vscode/extension-telemetry";
 import { AI_KEY } from '../../client/constants';
 import { dataverseAuthentication } from "./common/authenticationProvider";
 import { setContext } from "./common/localStore";
-import { PORTALS_URI_SCHEME } from "./common/constants";
+import { ORG_URL, PORTALS_URI_SCHEME } from "./common/constants";
 import { PortalsFS } from "./common/fileSystemProvider";
 import { checkParameters, ERRORS, showErrorDialog } from "./common/errorHandler";
 let _telemetry: TelemetryReporter;
@@ -49,13 +49,12 @@ export function activate(context: vscode.ExtensionContext): void {
                     vscode.window.showErrorMessage("Error encountered in query parameters fetch");
                 }
                 let accessToken: string;
-                let dataverseOrgUrl: string;
                 if (appName) {
                     switch (appName) {
                         case 'portal':
                             try {
-                                dataverseOrgUrl = checkParameters(queryParamsMap, entity);
-                                accessToken = await dataverseAuthentication(dataverseOrgUrl);
+                                checkParameters(queryParamsMap, entity);
+                                accessToken = await dataverseAuthentication(queryParamsMap.get(ORG_URL) as string);
                                 if (!accessToken) {
                                     {
                                         showErrorDialog(ERRORS.VSCODE_INITIAL_LOAD, ERRORS.AUTHORIZATION_FAILED);

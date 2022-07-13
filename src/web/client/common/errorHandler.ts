@@ -58,5 +58,4 @@ export function checkParameters(queryParamsMap: Map<string, string>, entity: str
     checkString(queryParamsMap.get(SCHEMA_FIELD_NAME));
     const dataverseOrgUrl = queryParamsMap.get(ORG_URL) as string;
     checkString(dataverseOrgUrl);
-    return dataverseOrgUrl;
 }

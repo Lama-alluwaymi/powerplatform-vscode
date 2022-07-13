@@ -114,7 +114,7 @@ export const portal_schema_data = {
                 "_foldername": "",
                 "_propextension": "website",
                 "_exporttype": "SingleFolder",
-                "_query": "?$select=adx_name,adx_webpageid,adx_websitelanguageid,_adx_portallanguageid_value"
+                "_query": "?$select=adx_name,adx_webpageid"
             },
             {
                 "fields": {
@@ -253,7 +253,7 @@ export const portal_schema_data = {
                 "_foldername": ".portalconfig",
                 "_propextension": "portallanguage",
                 "_exporttype": "SingleFile",
-                "_query": "?$select=adx_portallanguageid,adx_languagecode"
+                "_query": "$select=adx_portallanguageid,adx_languagecode"
             },
             {
                 "fields": {
