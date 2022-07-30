@@ -33,6 +33,7 @@ export type AdminEnvironmentListing = {
     EnvironmentUrl: string;
     Type: string;
     OrganizationId: string;
+    UniqueName: string;
 }
 
 export type PacAdminListOutput = PacOutput & {
@@ -53,7 +54,8 @@ export type OrgListOutput = {
     FriendlyName: string,
     OrganizationId: string,
     EnvironmentId: string,
-    EnvironmentUrl: string
+    EnvironmentUrl: string,
+    UniqueName: string,
 }
 
 export type PacOrgListOutput = PacOutput & {
